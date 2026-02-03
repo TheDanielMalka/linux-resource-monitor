@@ -7,13 +7,13 @@ USAGE=$(df -h | grep "C:" | awk '{print $6}' | tr -d '%')
 LOG_FILE="system_monitor.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 
-echo "------------------------------------------" >> "$LOG_FILE"
-echo "Report generated at: $TIMESTAMP" >> "$LOG_FILE"
-
-echo "Memory Info:" >> "$LOG_FILE"
-grep -E "MemTotal|MemFree" >> "$LOG_FILE"
-
-echo "The disk usage is: $USAGE percent" >> "$LOG_FILE"
+{
+    echo "---------------------------------------"
+    echo "Report generated at: $TIMESTAMP"
+    echo "Memory Info:"
+    grep -E "MemTotal|MemFree" /proc/meminfo
+    echo "The disk usage is: $USAGE percent"
+} >> "$LOG_FILE"
 
 if [ "$USAGE" -gt 85 ]; then
     echo -e "${RED}WARNING: High disk usage detected: $USAGE%${NC}"
