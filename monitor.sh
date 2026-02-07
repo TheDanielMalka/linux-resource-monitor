@@ -7,6 +7,8 @@ USAGE=$(df -h | grep "C:" | awk '{print $6}' | tr -d '%')
 LOG_FILE="system_monitor.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
+TOP_PROCESSES=$(MSYS_NO_PATHCONV=1 tasklist /nh | sort -rk 5 | head -n 3)
+
 
 {
     echo "CPU Load Average: $CPU_LOAD"
@@ -15,6 +17,8 @@ CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
     echo "Memory Info:"
     grep -E "MemTotal|MemFree" /proc/meminfo
     echo "The disk usage is: $USAGE percent"
+    echo "Top 3 Memory-Hungry Processes:"
+    echo "$TOP_PROCESSES"
 } >> "$LOG_FILE"
 
 if [ "$USAGE" -gt 85 ]; then
