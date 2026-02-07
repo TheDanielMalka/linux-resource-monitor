@@ -6,8 +6,10 @@ NC='\033[0m'
 USAGE=$(df -h | grep "C:" | awk '{print $6}' | tr -d '%')
 LOG_FILE="system_monitor.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
 
 {
+    echo "CPU Load Average: $CPU_LOAD"
     echo "---------------------------------------"
     echo "Report generated at: $TIMESTAMP"
     echo "Memory Info:"
