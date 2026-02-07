@@ -9,6 +9,10 @@ TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
 CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
 TOP_PROCESSES=$(MSYS_NO_PATHCONV=1 tasklist /nh | sort -rk 5 | head -n 3)
 
+if ! touch "$LOG_FILE" 2>/dev/null; then
+    echo -e "${RED}ERROR: Cannot write to log file: $LOG_FILE${NC}"
+    exit 1
+fi
 
 {
     echo "CPU Load Average: $CPU_LOAD"
