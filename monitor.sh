@@ -6,7 +6,15 @@ NC='\033[0m'
 USAGE=$(df -h | grep "C:" | awk '{print $6}' | tr -d '%')
 LOG_FILE="system_monitor.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+
+
+# For native Linux systems, use: CPU_LOAD=$(uptime | awk -F'load average:' '{print $2}')
+# Current implementation uses /proc/loadavg (works in Git Bash but shows 0.00)
 CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
+
+
+# For native Linux systems, use: ps aux --sort=-%mem | head -n 4
+# Current implementation uses tasklist (Windows command via Git Bash)
 TOP_PROCESSES=$(MSYS_NO_PATHCONV=1 tasklist /nh | sort -rk 5 | head -n 3)
 
 if ! touch "$LOG_FILE" 2>/dev/null; then
