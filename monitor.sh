@@ -5,7 +5,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+    export "$(grep -v '^#' .env | xargs)"
 else
     echo -e "${RED}WARNING: .env file not found. Slack notifications disabled.${NC}"
 fi
