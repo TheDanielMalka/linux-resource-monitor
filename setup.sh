@@ -33,7 +33,33 @@ setup_log_dir() {
     chmod 644 "$LOG_FILE"
 }
 
+setup_cron() {
+    CRON_JOB="0 * * * * $(pwd)/monitor.sh"
+    
+    if crontab -l 2>/dev/null | grep -q "monitor.sh"; then
+        echo -e "${GREEN}Cron job already exists${NC}"
+    else
+        (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
+        echo -e "${GREEN}Cron job added: runs every hour${NC}"
+    fi
+}
+
+setup_logrotate() {
+    cat > /etc/logrotate.d/monitor << EOF
+$LOG_FILE {
+    weekly
+    rotate 4
+    compress
+    missingok
+    notifempty
+}
+EOF
+    echo -e "${GREEN}Log rotation configured${NC}"
+}
+
 echo "=== Starting Setup ==="
 check_os
 setup_log_dir
+setup_cron
+setup_logrotate
 echo "=== Setup Complete ==="
