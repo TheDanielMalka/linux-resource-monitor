@@ -10,7 +10,7 @@ The main script (`monitor.sh`) runs on a Linux machine and checks:
 - Disk usage percentage
 - Top 3 memory-hungry processes
 
-If disk usage goes above 85%, it sends a warning to a Slack channel via webhook. Everything gets logged to a file with timestamps.
+If disk usage goes above 80%, it sends a warning to a Slack channel via webhook. Everything gets logged to a file with timestamps.
 
 There's also a `setup.sh` script that handles the initial setup - creates log directories, sets permissions, configures cron for hourly runs, and sets up log rotation so the log files don't eat up the disk over time.
 
