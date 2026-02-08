@@ -3,6 +3,25 @@
 BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+else
+    echo -e "${RED}WARNING: .env file not found. Slack notifications disabled.${NC}"
+fi
+
+send_slack_alert() {
+    local message="$1"
+    
+    if [ -z "$SLACK_WEBHOOK_URL" ]; then
+        return
+    fi
+    
+    curl -s -X POST -H 'Content-type: application/json' \
+        --data "{\"text\":\"$message\"}" \
+        "$SLACK_WEBHOOK_URL" > /dev/null
+}
+
 USAGE=$(df -h | grep "C:" | awk '{print $6}' | tr -d '%')
 LOG_FILE="system_monitor.log"
 TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
@@ -48,12 +67,12 @@ fi
     echo "$TOP_PROCESSES"
 } >> "$LOG_FILE"
 
-if [ "$USAGE" -gt 85 ]; then
+if [ "$USAGE" -gt 80 ]; then
     echo -e "${RED}WARNING: High disk usage detected: $USAGE%${NC}"
     echo "WARNING: High disk usage detected: $USAGE%" >> "$LOG_FILE"
+    send_slack_alert "⚠️ WARNING: High disk usage detected: $USAGE%"
 else
     echo -e "${BLUE}Status: Disk usage is normal ($USAGE%).${NC}"
     echo "Status: Disk usage is normal ($USAGE%)." >> "$LOG_FILE"
 fi
-
 exit 0
