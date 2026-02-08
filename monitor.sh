@@ -17,10 +17,25 @@ CPU_LOAD=$(awk '{print $1 ", " $2 ", " $3}' /proc/loadavg)
 # Current implementation uses tasklist (Windows command via Git Bash)
 TOP_PROCESSES=$(MSYS_NO_PATHCONV=1 tasklist /nh | sort -rk 5 | head -n 3)
 
+# Validate required commands exist
+for cmd in df awk grep date; do
+    if ! command -v $cmd &>/dev/null; then
+        echo -e "${RED}ERROR: Command '$cmd' not found${NC}"
+        exit 1
+    fi
+done
+
+
+# Handle script interruption (CTRL+C)
+trap 'echo -e "\n${RED}Script interrupted by user${NC}"; exit 130' SIGINT SIGTERM
+
+
 if ! touch "$LOG_FILE" 2>/dev/null; then
     echo -e "${RED}ERROR: Cannot write to log file: $LOG_FILE${NC}"
     exit 1
 fi
+
+
 
 {
     echo "CPU Load Average: $CPU_LOAD"
@@ -40,3 +55,5 @@ else
     echo -e "${BLUE}Status: Disk usage is normal ($USAGE%).${NC}"
     echo "Status: Disk usage is normal ($USAGE%)." >> "$LOG_FILE"
 fi
+
+exit 0
